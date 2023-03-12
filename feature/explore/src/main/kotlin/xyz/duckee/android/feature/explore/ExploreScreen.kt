@@ -155,7 +155,7 @@ internal fun ExploreScreen(
                         modifier = Modifier.padding(top = 16.dp, start = 12.dp),
                     ) {
                         Icon(
-                            painter = painterResource(id = xyz.duckee.android.core.designsystem.R.drawable.duck),
+                            painter = painterResource(id = R.drawable.duck),
                             contentDescription = null,
                             tint = Color.Unspecified,
                         )
@@ -258,7 +258,7 @@ internal fun ExploreScreen(
                             contentPadding = PaddingValues(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
                             icon = {
                                 Icon(
-                                    painter = painterResource(id = xyz.duckee.android.core.designsystem.R.drawable.icon_usdc),
+                                    painter = painterResource(id = R.drawable.icon_usdc),
                                     contentDescription = "duck logo",
                                     tint = Color.Unspecified,
                                     modifier = Modifier.size(24.dp),

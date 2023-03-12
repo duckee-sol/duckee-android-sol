@@ -50,7 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -136,7 +135,6 @@ internal fun CollectionScreen(
     val density = LocalDensity.current
 
     val pagerState = rememberPagerState()
-    val context = LocalContext.current
 
     CollapsingToolbarScaffold(
         state = state,
