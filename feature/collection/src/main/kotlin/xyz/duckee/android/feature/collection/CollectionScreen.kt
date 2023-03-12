@@ -15,7 +15,6 @@
  */
 package xyz.duckee.android.feature.collection
 
-import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

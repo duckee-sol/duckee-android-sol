@@ -29,7 +29,9 @@ import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
 import xyz.duckee.android.core.domain.art.GetArtFeedUseCase
+import xyz.duckee.android.core.domain.art.LikeArtUseCase
 import xyz.duckee.android.core.domain.auth.CheckAuthenticateStateUseCase
+import xyz.duckee.android.core.model.ArtList
 import xyz.duckee.android.core.ui.ExploreDataManager
 import xyz.duckee.android.feature.explore.contract.ExploreSideEffect
 import xyz.duckee.android.feature.explore.contract.ExploreState
@@ -39,6 +41,7 @@ import javax.inject.Inject
 internal class ExploreViewModel @Inject constructor(
     private val checkAuthenticateStateUseCase: CheckAuthenticateStateUseCase,
     private val getArtFeedUseCase: GetArtFeedUseCase,
+    private val likeArtUseCase: LikeArtUseCase,
     private val exploreDataManager: ExploreDataManager,
 ) : ViewModel(), ContainerHost<ExploreState, ExploreSideEffect> {
 
@@ -70,6 +73,25 @@ internal class ExploreViewModel @Inject constructor(
             postSideEffect(ExploreSideEffect.GoDetail(id = tokenId))
         } else {
             postSideEffect(ExploreSideEffect.GoSignInScreen)
+        }
+    }
+
+    fun onLikeClick(tokenId: String) = intent {
+        state.feeds.firstOrNull { it.tokenId == tokenId.toInt() }?.let {
+            likeArtUseCase(tokenId, !it.liked)
+
+            reduce {
+                state.copy(
+                    feeds = buildList<ArtList.Result> {
+                        addAll(state.feeds)
+
+                        val index = state.feeds.indexOfFirst { it.tokenId == tokenId.toInt() }
+                        this[index] = this[index].copy(
+                            liked = !it.liked,
+                        )
+                    }.toPersistentList(),
+                )
+            }
         }
     }
 

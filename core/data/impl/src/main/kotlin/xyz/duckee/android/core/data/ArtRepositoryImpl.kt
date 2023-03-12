@@ -69,4 +69,7 @@ internal class ArtRepositoryImpl @Inject constructor(
 
     override suspend fun getArtDetails(tokenId: String): ApiResponse<ArtDetails> =
         artDataSource.getArtDetail(tokenId).mapSuccess { artDetails.toModel() }
+
+    override suspend fun putArtLike(tokenId: String, liked: Boolean): ApiResponse<Unit> =
+        artDataSource.putArtLike(tokenId, liked)
 }

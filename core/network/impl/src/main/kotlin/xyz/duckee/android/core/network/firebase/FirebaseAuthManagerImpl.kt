@@ -48,16 +48,15 @@ internal class FirebaseAuthManagerImpl @Inject constructor(
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("440981286435-b04tte58tegtilqr6gr42os4d2uuaoeu.apps.googleusercontent.com")
             .requestEmail()
-            .build();
+            .build()
 
         // Build a GoogleApiClient with access to the Google Sign-In API and the options specified by gso.
         val googleApiClient = GoogleApiClient.Builder(context)
             .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-            .build();
+            .build()
 
         GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN)
             .signOut().addOnCompleteListener {
-
                 googleApiClient.connect()
                 googleApiClient.registerConnectionCallbacks(object :
                     GoogleApiClient.ConnectionCallbacks {
@@ -96,6 +95,4 @@ internal class FirebaseAuthManagerImpl @Inject constructor(
                 Runtime.getRuntime().exit(0)
             }
     }
-
-
 }

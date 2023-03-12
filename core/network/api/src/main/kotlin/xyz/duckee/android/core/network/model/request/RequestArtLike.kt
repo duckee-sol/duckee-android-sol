@@ -18,13 +18,6 @@ package xyz.duckee.android.core.network.model.request
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RequestUploadArt(
-    val forSale: Boolean,
-    val description: String?,
-    val imageUrl: String,
+data class RequestArtLike(
     val liked: Boolean,
-    val parentTokenId: Int?,
-    val priceInFlow: Double,
-    val recipe: RequestGenerateImage,
-    val royaltyFee: Double,
 )

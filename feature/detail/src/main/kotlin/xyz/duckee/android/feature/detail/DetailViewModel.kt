@@ -29,11 +29,14 @@ import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
 import xyz.duckee.android.core.domain.art.GetArtDetailsUseCase
+import xyz.duckee.android.core.domain.art.LikeArtUseCase
 import xyz.duckee.android.core.domain.payment.PaymentArtRecipeUseCase
 import xyz.duckee.android.core.domain.user.FollowUserUseCase
 import xyz.duckee.android.core.domain.user.GetMyProfileUseCase
 import xyz.duckee.android.core.domain.user.GetUserProfileUseCase
 import xyz.duckee.android.core.domain.user.UnfollowUserUseCase
+import xyz.duckee.android.core.ui.CollectionDataManager
+import xyz.duckee.android.core.ui.ExploreDataManager
 import xyz.duckee.android.core.ui.PurchaseEventManager
 import xyz.duckee.android.core.ui.RecipeStore
 import xyz.duckee.android.feature.detail.contract.DetailSideEffect
@@ -49,7 +52,10 @@ internal class DetailViewModel @Inject constructor(
     private val followUserUseCase: FollowUserUseCase,
     private val unfollowUserUseCase: UnfollowUserUseCase,
     private val paymentArtRecipeUseCase: PaymentArtRecipeUseCase,
+    private val likeArtUseCase: LikeArtUseCase,
     private val recipeStore: RecipeStore,
+    private val collectionDataManager: CollectionDataManager,
+    private val exploreDataManager: ExploreDataManager,
     private val purchaseEventManager: PurchaseEventManager,
 ) : ViewModel(), ContainerHost<DetailState, DetailSideEffect> {
 
@@ -93,6 +99,22 @@ internal class DetailViewModel @Inject constructor(
                 .suspendOnSuccess {
                     getOwnerUserProfile(ownerId)
                 }
+        }
+    }
+
+    fun onLikeClick() = intent {
+        collectionDataManager.forceRefreshWhenEnteringCollectionTab()
+        exploreDataManager.forceRefreshWhenEnteringExploreTab()
+
+        val liked = state.details?.liked == true
+
+        likeArtUseCase(tokenId, !liked)
+        reduce {
+            state.copy(
+                details = state.details?.copy(
+                    liked = !liked,
+                ),
+            )
         }
     }
 

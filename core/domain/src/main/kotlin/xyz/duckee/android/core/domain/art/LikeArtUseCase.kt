@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.duckee.android.core.network.model.request
+package xyz.duckee.android.core.domain.art
 
-import kotlinx.serialization.Serializable
+import com.skydoves.sandwich.ApiResponse
+import dagger.Reusable
+import xyz.duckee.android.core.data.ArtRepository
+import javax.inject.Inject
 
-@Serializable
-data class RequestUploadArt(
-    val forSale: Boolean,
-    val description: String?,
-    val imageUrl: String,
-    val liked: Boolean,
-    val parentTokenId: Int?,
-    val priceInFlow: Double,
-    val recipe: RequestGenerateImage,
-    val royaltyFee: Double,
-)
+@Reusable
+class LikeArtUseCase @Inject constructor(
+    private val artRepository: ArtRepository,
+) {
+    suspend operator fun invoke(tokenId: String, liked: Boolean): ApiResponse<Unit> =
+        artRepository.putArtLike(tokenId, liked)
+}

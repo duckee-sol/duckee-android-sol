@@ -47,4 +47,6 @@ interface ArtDataSource {
     ): ApiResponse<Unit>
 
     suspend fun getArtDetail(tokenId: String): ApiResponse<ResponseArtDetail>
+
+    suspend fun putArtLike(tokenId: String, liked: Boolean): ApiResponse<Unit>
 }

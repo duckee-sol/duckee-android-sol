@@ -19,6 +19,7 @@ import com.skydoves.sandwich.ApiResponse
 import xyz.duckee.android.core.network.api.ArtAPI
 import xyz.duckee.android.core.network.model.ResponseArtDetail
 import xyz.duckee.android.core.network.model.ResponseArtList
+import xyz.duckee.android.core.network.model.request.RequestArtLike
 import xyz.duckee.android.core.network.model.request.RequestGenerateImage
 import xyz.duckee.android.core.network.model.request.RequestUploadArt
 import javax.inject.Inject
@@ -75,10 +76,13 @@ internal class ArtDataSourceImpl @Inject constructor(
                         height = sizeHeight,
                     ),
                 ),
-                royaltyFee = royaltyFee,
+                royaltyFee = royaltyFee.toDouble() / 100,
             ),
         )
 
     override suspend fun getArtDetail(tokenId: String): ApiResponse<ResponseArtDetail> =
         api.getArtDetails(tokenId)
+
+    override suspend fun putArtLike(tokenId: String, liked: Boolean): ApiResponse<Unit> =
+        api.putArtLike(tokenId, payload = RequestArtLike(liked))
 }

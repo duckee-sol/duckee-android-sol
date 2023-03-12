@@ -73,7 +73,7 @@ fun DuckeeLineage(
             painter = painterResource(id = R.drawable.icon_right_arrow_with_circle),
             contentDescription = null,
             tint = Color.Unspecified,
-            modifier = Modifier.size(12.dp),
+            modifier = Modifier.size(24.dp),
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

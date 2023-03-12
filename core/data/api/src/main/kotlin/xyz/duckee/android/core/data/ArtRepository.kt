@@ -43,4 +43,6 @@ interface ArtRepository {
     ): ApiResponse<Unit>
 
     suspend fun getArtDetails(tokenId: String): ApiResponse<ArtDetails>
+
+    suspend fun putArtLike(tokenId: String, liked: Boolean): ApiResponse<Unit>
 }

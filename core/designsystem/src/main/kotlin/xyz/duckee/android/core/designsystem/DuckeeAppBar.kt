@@ -39,6 +39,7 @@ import xyz.duckee.android.core.ui.LocalNavigationPopStack
 fun DuckeeAppBar(
     modifier: Modifier = Modifier,
     isBackButtonDimEnabled: Boolean = false,
+    rightMenuContent: @Composable () -> Unit = {},
 ) {
     val backHandler = LocalNavigationPopStack.current
 
@@ -64,6 +65,8 @@ fun DuckeeAppBar(
                     }
                 },
         )
+        Spacer(modifier = Modifier.weight(1f))
+        rightMenuContent()
     }
 }
 

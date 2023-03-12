@@ -38,6 +38,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -62,6 +63,7 @@ import xyz.duckee.android.core.designsystem.DuckeeArtBadge
 import xyz.duckee.android.core.designsystem.DuckeeFilterChip
 import xyz.duckee.android.core.designsystem.DuckeeNetworkImage
 import xyz.duckee.android.core.designsystem.DuckeeSearchBar
+import xyz.duckee.android.core.designsystem.R
 import xyz.duckee.android.core.designsystem.foundation.clickableSingle
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 import xyz.duckee.android.core.ui.isScrolledToEnd
@@ -97,6 +99,7 @@ internal fun ExploreRoute(
         onSearchValueChanged = viewModel::onSearchValueChanged,
         onFilterClick = viewModel::onFilterClick,
         onImageClick = viewModel::onImageClick,
+        onLikeClick = viewModel::onLikeClick,
         onScrollEnd = viewModel::onScrollEnd,
     )
 }
@@ -108,6 +111,7 @@ internal fun ExploreScreen(
     onSearchValueChanged: (String) -> Unit,
     onFilterClick: (String) -> Unit,
     onImageClick: (String) -> Unit,
+    onLikeClick: (String) -> Unit,
     onScrollEnd: () -> Unit,
 ) {
     val scrollState = rememberLazyListState()
@@ -222,6 +226,23 @@ internal fun ExploreScreen(
                             .fillMaxSize()
                             .clickableSingle(onClick = { onImageClick(feed.tokenId.toString()) }),
                     )
+                    IconButton(
+                        onClick = { onLikeClick(feed.tokenId.toString()) },
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.TopEnd),
+                    ) {
+                        Icon(
+                            painter = if (feed.liked) {
+                                painterResource(id = R.drawable.icon_like_fill)
+                            } else {
+                                painterResource(id = R.drawable.icon_like_unfill)
+                            },
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                        )
+                    }
+
                     if (feed.priceInFlow == 0.0) {
                         DuckeeArtBadge(
                             label = "Open Source",
@@ -263,6 +284,7 @@ internal fun ExploreScreenPreview() {
             onSearchValueChanged = {},
             onFilterClick = {},
             onImageClick = {},
+            onLikeClick = {},
             onScrollEnd = {},
         )
     }

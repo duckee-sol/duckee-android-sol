@@ -29,6 +29,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,6 +64,7 @@ import xyz.duckee.android.core.designsystem.DuckeeInformationItem
 import xyz.duckee.android.core.designsystem.DuckeeLineage
 import xyz.duckee.android.core.designsystem.DuckeeNetworkImage
 import xyz.duckee.android.core.designsystem.DuckeePromptUnlock
+import xyz.duckee.android.core.designsystem.R
 import xyz.duckee.android.core.designsystem.foundation.drawColoredShadow
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 import xyz.duckee.android.core.designsystem.theme.PPObjectSans
@@ -106,6 +110,7 @@ internal fun DetailRoute(
         uiState = uiState,
         onBuyOrTryButtonClick = viewModel::onBuyOrTryButtonClick,
         onFollowButtonClick = viewModel::onFollowButtonClick,
+        onLikeClick = viewModel::onLikeClick,
     )
 }
 
@@ -114,6 +119,7 @@ internal fun DetailScreen(
     uiState: DetailState,
     onBuyOrTryButtonClick: () -> Unit,
     onFollowButtonClick: () -> Unit,
+    onLikeClick: () -> Unit,
 ) {
     Scaffold {
         Box(
@@ -325,7 +331,23 @@ internal fun DetailScreen(
                     .background(appBarBackgroundColorAlpha)
                     .align(Alignment.TopCenter)
                     .statusBarsPadding(),
-            )
+            ) {
+                IconButton(
+                    onClick = onLikeClick,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd),
+                ) {
+                    Icon(
+                        painter = if (uiState.details?.liked == true) {
+                            painterResource(id = R.drawable.icon_like_fill)
+                        } else {
+                            painterResource(id = R.drawable.icon_like_unfill)
+                        },
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                    )
+                }
+            }
 
             DuckeeButton(
                 label = if (uiState.details?.recipe == null) {
@@ -368,6 +390,7 @@ internal fun DetailScreenPreview() {
             uiState = DetailState(),
             onBuyOrTryButtonClick = {},
             onFollowButtonClick = {},
+            onLikeClick = {},
         )
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright 2023 The Duckee Project
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+          http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="44dp"
+    android:height="44dp"
+    android:viewportWidth="44"
+    android:viewportHeight="44">
+  <path
+      android:pathData="M34.288,21.612L22.348,33.45L10.435,21.592C9.125,20.289 8.404,18.56 8.404,16.718C8.404,14.876 9.119,13.147 10.428,11.85C11.731,10.553 13.468,9.835 15.312,9.835C17.163,9.835 18.907,10.553 20.216,11.856L21.726,13.359C22.081,13.712 22.649,13.712 23.003,13.359L24.499,11.87C25.809,10.566 27.553,9.848 29.397,9.848C31.241,9.848 32.978,10.566 34.288,11.863C35.597,13.167 36.312,14.896 36.312,16.738C36.319,18.58 35.597,20.309 34.288,21.612Z"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.6"/>
+  <path
+      android:pathData="M34.958,11.153C33.384,9.619 31.301,8.78 29.077,8.78C26.853,8.78 24.763,9.625 23.19,11.159L22.368,11.961L21.533,11.147C19.959,9.613 17.863,8.761 15.639,8.761C13.422,8.761 11.332,9.606 9.765,11.134C8.191,12.669 7.324,14.706 7.331,16.874C7.331,19.042 8.204,21.074 9.777,22.608L21.743,34.275C21.909,34.436 22.132,34.523 22.348,34.523C22.565,34.523 22.788,34.442 22.954,34.281L34.945,22.633C36.519,21.099 37.386,19.061 37.386,16.893C37.392,14.725 36.532,12.688 34.958,11.153ZM33.735,21.447L22.348,32.504L10.988,21.428C9.739,20.21 9.051,18.595 9.051,16.874C9.051,15.154 9.733,13.539 10.981,12.327C12.224,11.116 13.881,10.445 15.639,10.445C17.404,10.445 19.067,11.116 20.316,12.333L21.756,13.737C22.094,14.067 22.635,14.067 22.973,13.737L24.4,12.346C25.649,11.128 27.312,10.457 29.071,10.457C30.829,10.457 32.486,11.128 33.735,12.34C34.984,13.557 35.665,15.172 35.665,16.893C35.672,18.614 34.984,20.229 33.735,21.447Z"
+      android:fillColor="#E9ECEF"/>
+</vector>
