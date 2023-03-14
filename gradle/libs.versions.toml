@@ -74,6 +74,7 @@ androidx-viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
 androidx-startup = "androidx.startup:startup-runtime:1.1.1"
 androidx-dataStore-core = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-dataStore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-browser = "androidx.browser:browser:1.5.0"
 
 # Material 2
 material2 = { module = "androidx.compose.material:material", version.ref = "compose" }
