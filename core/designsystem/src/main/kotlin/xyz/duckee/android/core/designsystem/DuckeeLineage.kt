@@ -89,7 +89,7 @@ fun DuckeeLineage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp)),
             )
             Text(
                 text = "Child Recipe",

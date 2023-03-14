@@ -21,7 +21,6 @@ import androidx.lifecycle.viewModelScope
 import com.skydoves.sandwich.suspendOnException
 import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -42,6 +41,7 @@ import xyz.duckee.android.core.ui.PurchaseEventManager
 import xyz.duckee.android.core.ui.RecipeStore
 import xyz.duckee.android.feature.detail.contract.DetailSideEffect
 import xyz.duckee.android.feature.detail.contract.DetailState
+import javax.inject.Inject
 
 @HiltViewModel
 internal class DetailViewModel @Inject constructor(
