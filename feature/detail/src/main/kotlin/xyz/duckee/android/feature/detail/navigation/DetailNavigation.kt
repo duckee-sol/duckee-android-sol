@@ -22,12 +22,14 @@ import xyz.duckee.android.feature.detail.DetailRoute
 
 fun NavGraphBuilder.detailScreen(
     goRecipeScreen: () -> Unit,
+    goDetailScreen: (tokenId: Long) -> Unit,
 ) {
     sharedXTransitionComposable(
         command = DetailDirections.main,
     ) {
         DetailRoute(
             goRecipeScreen = goRecipeScreen,
+            goDetailScreen = goDetailScreen,
         )
     }
 }

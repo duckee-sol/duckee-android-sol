@@ -99,6 +99,7 @@ fun DuckeeApp(
             )
             detailScreen(
                 goRecipeScreen = { navController.navigateToRecipeScreen(tryMode = true) },
+                goDetailScreen = { navController.navigateToDetailScreen(it.toString()) },
             )
             recipeScreen(
                 goRecipeResultScreen = navController::navigateToRecipeResultScreen,

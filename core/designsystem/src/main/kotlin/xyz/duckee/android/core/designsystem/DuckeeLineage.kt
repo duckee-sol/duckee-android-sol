@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import xyz.duckee.android.core.designsystem.foundation.clickableSingle
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 
 @Composable
@@ -41,6 +42,7 @@ fun DuckeeLineage(
     modifier: Modifier = Modifier,
     parentImageUrl: String,
     childImageUrl: String,
+    onParentArtClick: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(23.5.dp),
@@ -60,7 +62,8 @@ fun DuckeeLineage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickableSingle { onParentArtClick() },
             )
             Text(
                 text = "Parents Recipe",
@@ -86,7 +89,7 @@ fun DuckeeLineage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(12.dp))
             )
             Text(
                 text = "Child Recipe",
@@ -105,6 +108,7 @@ internal fun DuckeeLineagePreview() {
         DuckeeLineage(
             parentImageUrl = "parentImageUrl",
             childImageUrl = "childImageUrl",
+            onParentArtClick = {},
         )
     }
 }

@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
+import kotlin.math.min
 import org.orbitmvi.orbit.compose.collectSideEffect
 import xyz.duckee.android.core.designsystem.DuckeeAppBar
 import xyz.duckee.android.core.designsystem.DuckeeButton
@@ -73,36 +74,39 @@ import xyz.duckee.android.feature.detail.component.DetailPriceInformation
 import xyz.duckee.android.feature.detail.component.DetailProfile
 import xyz.duckee.android.feature.detail.contract.DetailSideEffect
 import xyz.duckee.android.feature.detail.contract.DetailState
-import kotlin.math.min
 
 @Composable
 internal fun DetailRoute(
     viewModel: DetailViewModel = hiltViewModel(),
     goRecipeScreen: () -> Unit,
+    goDetailScreen: (Long) -> Unit,
 ) {
     val context = LocalContext.current as ComponentActivity
     val paymentSheet = LocalPaymentSheet.current
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     viewModel.collectSideEffect {
-        if (it is DetailSideEffect.GoRecipeScreen) {
-            goRecipeScreen()
-        } else if (it is DetailSideEffect.PurchaseWithStripe) {
-            val paymentIntentClientSecret = it.payment.paymentIntent
-            val customerConfiguration = PaymentSheet.CustomerConfiguration(
-                it.payment.customer,
-                it.payment.ephemeralKey,
-            )
-            PaymentConfiguration.init(context, it.payment.publishableKey)
+        when (it) {
+            is DetailSideEffect.GoRecipeScreen -> goRecipeScreen()
+            is DetailSideEffect.PurchaseWithStripe -> {
+                val paymentIntentClientSecret = it.payment.paymentIntent
+                val customerConfiguration = PaymentSheet.CustomerConfiguration(
+                    it.payment.customer,
+                    it.payment.ephemeralKey,
+                )
+                PaymentConfiguration.init(context, it.payment.publishableKey)
 
-            paymentSheet?.presentWithPaymentIntent(
-                paymentIntentClientSecret,
-                PaymentSheet.Configuration(
-                    "Duckee Art Recipe",
-                    customer = customerConfiguration,
-                    allowsDelayedPaymentMethods = true,
-                ),
-            )
+                paymentSheet?.presentWithPaymentIntent(
+                    paymentIntentClientSecret,
+                    PaymentSheet.Configuration(
+                        "Duckee Art Recipe",
+                        customer = customerConfiguration,
+                        allowsDelayedPaymentMethods = true,
+                    ),
+                )
+            }
+
+            is DetailSideEffect.GoDetailScreen -> goDetailScreen(it.tokenId)
         }
     }
 
@@ -111,6 +115,7 @@ internal fun DetailRoute(
         onBuyOrTryButtonClick = viewModel::onBuyOrTryButtonClick,
         onFollowButtonClick = viewModel::onFollowButtonClick,
         onLikeClick = viewModel::onLikeClick,
+        onArtClick = viewModel::onArtClick,
     )
 }
 
@@ -120,6 +125,7 @@ internal fun DetailScreen(
     onBuyOrTryButtonClick: () -> Unit,
     onFollowButtonClick: () -> Unit,
     onLikeClick: () -> Unit,
+    onArtClick: (String) -> Unit,
 ) {
     Scaffold {
         Box(
@@ -194,6 +200,7 @@ internal fun DetailScreen(
                     DuckeeLineage(
                         parentImageUrl = uiState.details.parentToken?.imageUrl.orEmpty(),
                         childImageUrl = uiState.details.imageUrl,
+                        onParentArtClick = { onArtClick(uiState.details.parentToken?.tokenId.toString()) },
                     )
                     Spacer(modifier = Modifier.height(44.dp))
                 }
@@ -209,6 +216,9 @@ internal fun DetailScreen(
 
                     DuckeeHorizontalNftCarousel(
                         tokens = uiState.details.derivedTokens,
+                        onClick = {
+                            onArtClick(it)
+                        },
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -391,6 +401,7 @@ internal fun DetailScreenPreview() {
             onBuyOrTryButtonClick = {},
             onFollowButtonClick = {},
             onLikeClick = {},
+            onArtClick = {},
         )
     }
 }

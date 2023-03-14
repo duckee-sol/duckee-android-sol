@@ -28,4 +28,9 @@ internal sealed interface DetailSideEffect {
     data class PurchaseWithStripe(
         val payment: Payment,
     ) : DetailSideEffect
+
+    @Immutable
+    data class GoDetailScreen(
+        val tokenId: Long,
+    ) : DetailSideEffect
 }

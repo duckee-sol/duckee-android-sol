@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
+import xyz.duckee.android.core.designsystem.foundation.clickableSingle
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 import xyz.duckee.android.core.designsystem.theme.PPObjectSans
 import xyz.duckee.android.core.model.ArtDetails
@@ -41,6 +42,7 @@ import xyz.duckee.android.core.model.ArtDetails
 fun DuckeeHorizontalNftCarousel(
     modifier: Modifier = Modifier,
     tokens: ImmutableList<ArtDetails.Token>,
+    onClick: (tokenId: String) -> Unit,
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -54,7 +56,8 @@ fun DuckeeHorizontalNftCarousel(
                     contentDescription = null,
                     modifier = Modifier
                         .size(144.dp)
-                        .clip(RoundedCornerShape(16.dp)),
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickableSingle { onClick(it.tokenId.toString()) },
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
