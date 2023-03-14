@@ -20,7 +20,7 @@ import xyz.duckee.android.core.network.model.ResponseSignIn
 
 interface AuthDataSource {
 
-    suspend fun signInWithFirebase(): ApiResponse<ResponseSignIn>
+    suspend fun signIn(rawData: String): ApiResponse<ResponseSignIn>
 
-    suspend fun signUpWithFirebase(): ApiResponse<ResponseSignIn>
+    suspend fun signUp(rawData: String): ApiResponse<ResponseSignIn>
 }

@@ -20,12 +20,11 @@ import xyz.duckee.android.core.data.ArtRepository
 import javax.inject.Inject
 
 @Reusable
-class UploadArtUseCase @Inject constructor(
+class SerializeArtUseCase @Inject constructor(
     private val artRepository: ArtRepository,
 ) {
 
-    suspend operator fun invoke(
-        tokenMint: String,
+    operator fun invoke(
         forSale: Boolean,
         imageUrl: String,
         description: String?,
@@ -42,8 +41,7 @@ class UploadArtUseCase @Inject constructor(
         sampler: String?,
         seed: Int?,
         parentTokenId: Int?,
-    ) = artRepository.uploadArt(
-        tokenMint,
+    ) = artRepository.serializeArt(
         forSale,
         imageUrl,
         description,

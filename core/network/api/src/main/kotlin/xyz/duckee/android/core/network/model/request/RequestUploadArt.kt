@@ -19,6 +19,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RequestUploadArt(
+    val tokenMint: String? = null,
     val forSale: Boolean,
     val description: String?,
     val imageUrl: String,

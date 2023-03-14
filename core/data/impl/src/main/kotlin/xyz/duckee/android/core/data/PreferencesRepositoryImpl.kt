@@ -29,6 +29,10 @@ internal class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun setCredentials(accessToken: String, refreshToken: String) =
         dataSource.setCredentials(accessToken, refreshToken)
 
+    override suspend fun setAddress(address: String) {
+        dataSource.setAddress(address)
+    }
+
     override suspend fun clearCredentials() {
         dataSource.clearCredentials()
     }

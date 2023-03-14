@@ -24,5 +24,7 @@ interface DuckeePreferencesDataSource {
 
     suspend fun setCredentials(accessToken: String, refreshToken: String)
 
+    suspend fun setAddress(address: String)
+
     suspend fun clearCredentials()
 }

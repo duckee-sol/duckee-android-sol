@@ -46,6 +46,10 @@ internal class CollectionViewModel @Inject constructor(
         getMyProfile()
     }
 
+    fun onResume() {
+        getMyProfile()
+    }
+
     fun onArtClick(tokenId: Int) = intent {
         postSideEffect(CollectionSideEffect.GoDetailScreen(tokenId))
     }

@@ -22,7 +22,7 @@ android {
     defaultConfig {
         namespace = "xyz.duckee.android.core.network.api"
         group = "xyz.duckee.android.core.network"
-        buildConfigField("String", "API_BASE_URL", "\"https://api.duckee.xyz/\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://api-solana.duckee.xyz/\"")
     }
 }
 

@@ -25,3 +25,7 @@ android {
         namespace = "xyz.duckee.android.feature.signin"
     }
 }
+
+dependencies {
+    implementation(libs.androidx.browser)
+}

@@ -15,18 +15,17 @@
  */
 package xyz.duckee.android.feature.signin
 
+import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.border
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -43,10 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import kotlinx.coroutines.tasks.await
 import org.orbitmvi.orbit.compose.collectSideEffect
 import xyz.duckee.android.core.designsystem.DuckeeAppBar
 import xyz.duckee.android.core.designsystem.DuckeeButton
@@ -54,6 +49,7 @@ import xyz.duckee.android.core.designsystem.DuckeeCharacterLoadingOverlay
 import xyz.duckee.android.core.designsystem.R
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 import xyz.duckee.android.core.designsystem.theme.PPObjectSans
+import xyz.duckee.android.core.ui.DeeplinkHandlable
 import xyz.duckee.android.feature.signin.contract.SignInSideEffect
 import xyz.duckee.android.feature.signin.contract.SignInState
 
@@ -63,48 +59,43 @@ internal fun SignInRoute(
     goExploreTab: () -> Unit,
 ) {
     val context = LocalContext.current
+    val deeplinkHandler = context as DeeplinkHandlable
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val deeplink by deeplinkHandler.deeplink.collectAsStateWithLifecycle()
 
-    val googleLoginLauncher = rememberLauncherForActivityResult(
-        contract = FirebaseAuthUIActivityResultContract(),
-        onResult = viewModel::onGoogleLoginResult,
-    )
-
-    LaunchedEffect(Unit) {
-        AuthUI.getInstance().signOut(context).await()
+    LaunchedEffect(deeplink) {
+        if (deeplink != Uri.EMPTY) {
+            viewModel.onWebViewLoginResult(deeplink.getQueryParameter("data").orEmpty())
+        }
     }
 
     viewModel.collectSideEffect {
         when (it) {
-            is SignInSideEffect.OpenFirebaseGoogleLoginPrompt -> {
-                val signInIntent = AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setIsSmartLockEnabled(false)
-                    .setAvailableProviders(
-                        arrayListOf(
-                            AuthUI.IdpConfig.GoogleBuilder()
-                                .setSignInOptions(
-                                    GoogleSignInOptions.DEFAULT_SIGN_IN
-                                ).build()
-                        )
-                    )
-                    .build()
-                googleLoginLauncher.launch(signInIntent)
-            }
-
             is SignInSideEffect.ShowErrorToast -> {
-                Toast.makeText(context, "Sign with google failed.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Sign in with solana failed.", Toast.LENGTH_SHORT).show()
             }
 
             is SignInSideEffect.GoExploreTab -> {
                 goExploreTab()
             }
+
+            else -> {}
         }
     }
 
     SignInScreen(
         uiState = uiState,
-        onSignInGoogleButtonClick = viewModel::onSignInGoogleButtonClick,
+        onSignInGoogleButtonClick = {
+        },
+        onSignInSolanaButtonClick = {
+            val googleLoginUrl = Uri.parse("https://with-solana.duckee.xyz/auth")
+            val emailValidationIntent = CustomTabsIntent.Builder().setToolbarColor(android.graphics.Color.BLACK)
+                .setNavigationBarDividerColor(android.graphics.Color.BLACK)
+                .setShowTitle(false)
+                .setShareState(SHARE_STATE_OFF)
+                .setNavigationBarColor(android.graphics.Color.BLACK).build()
+            emailValidationIntent.launchUrl(context, googleLoginUrl)
+        },
     )
 }
 
@@ -112,6 +103,7 @@ internal fun SignInRoute(
 internal fun SignInScreen(
     uiState: SignInState,
     onSignInGoogleButtonClick: () -> Unit,
+    onSignInSolanaButtonClick: () -> Unit,
 ) {
     Scaffold {
         DuckeeAppBar(
@@ -143,35 +135,35 @@ internal fun SignInScreen(
                         modifier = Modifier.size(20.dp),
                     )
                 },
-                onClick = onSignInGoogleButtonClick,
+                onClick = onSignInSolanaButtonClick,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(10.dp))
-            DuckeeButton(
-                label = "Sign with Google",
-                labelStyle = DuckeeTheme.typography.title1.copy(
-                    fontFamily = PPObjectSans,
-                ),
-                labelColor = Color(0xfffbfbfb),
-                backgroundColor = Color.Transparent,
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_google_logo),
-                        contentDescription = "Google logo",
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(20.dp),
-                    )
-                },
-                onClick = onSignInGoogleButtonClick,
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .border(
-                        width = 1.dp, color = Color(0xfffbfbfb), shape = RoundedCornerShape(24.dp)
-                    )
-                    .fillMaxWidth(),
-            )
+//            Spacer(modifier = Modifier.height(10.dp))
+//            DuckeeButton(
+//                label = "Sign with Google",
+//                labelStyle = DuckeeTheme.typography.title1.copy(
+//                    fontFamily = PPObjectSans,
+//                ),
+//                labelColor = Color(0xfffbfbfb),
+//                backgroundColor = Color.Transparent,
+//                icon = {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.icon_google_logo),
+//                        contentDescription = "Google logo",
+//                        tint = Color.Unspecified,
+//                        modifier = Modifier.size(20.dp),
+//                    )
+//                },
+//                onClick = onSignInGoogleButtonClick,
+//                modifier = Modifier
+//                    .padding(horizontal = 24.dp)
+//                    .border(
+//                        width = 1.dp, color = Color(0xfffbfbfb), shape = RoundedCornerShape(24.dp)
+//                    )
+//                    .fillMaxWidth(),
+//            )
             Spacer(modifier = Modifier.weight(1f))
         }
 
@@ -188,6 +180,7 @@ internal fun SignInScreenPreview() {
         SignInScreen(
             uiState = SignInState(),
             onSignInGoogleButtonClick = {},
+            onSignInSolanaButtonClick = {},
         )
     }
 }

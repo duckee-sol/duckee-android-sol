@@ -29,5 +29,6 @@ dependencies {
     implementation(libs.toolbar.compose)
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
-    implementation(project(mapOf("path" to ":core:network:api")))
+    implementation(libs.androidx.browser)
+    implementation(project(":core:network:api"))
 }

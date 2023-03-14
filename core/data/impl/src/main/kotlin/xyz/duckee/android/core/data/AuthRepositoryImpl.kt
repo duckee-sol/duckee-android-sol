@@ -27,11 +27,11 @@ internal class AuthRepositoryImpl @Inject constructor(
     private val dataSource: AuthDataSource,
 ) : AuthRepository {
 
-    override suspend fun signInWithFirebase(): ApiResponse<Pair<Credentials, User>> =
-        dataSource.signInWithFirebase()
+    override suspend fun signIn(rawData: String): ApiResponse<Pair<Credentials, User>> =
+        dataSource.signIn(rawData)
             .mapSuccess { credentials.toModel() to user.toModel() }
 
-    override suspend fun signUpWithFirebase(): ApiResponse<Pair<Credentials, User>> =
-        dataSource.signUpWithFirebase()
+    override suspend fun signUp(rawData: String): ApiResponse<Pair<Credentials, User>> =
+        dataSource.signUp(rawData)
             .mapSuccess { credentials.toModel() to user.toModel() }
 }

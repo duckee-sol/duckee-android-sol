@@ -15,37 +15,46 @@
  */
 package xyz.duckee.android
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import soup.compose.material.motion.navigation.rememberMaterialMotionNavController
 import timber.log.Timber
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 import xyz.duckee.android.core.domain.auth.CheckAuthenticateStateUseCase
+import xyz.duckee.android.core.ui.DeeplinkHandlable
 import xyz.duckee.android.core.ui.LocalNavigationPopStack
 import xyz.duckee.android.core.ui.LocalPaymentSheet
 import xyz.duckee.android.core.ui.PurchaseEventManager
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    lateinit var paymentSheet: PaymentSheet
+class MainActivity : ComponentActivity(), DeeplinkHandlable {
+    private lateinit var paymentSheet: PaymentSheet
 
     @Inject
     lateinit var checkAuthenticateStateUseCase: CheckAuthenticateStateUseCase
 
     @Inject
     lateinit var purchaseEventManager: PurchaseEventManager
+
+    private val _deeplink = MutableStateFlow(Uri.EMPTY)
+    override val deeplink = _deeplink.asStateFlow()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +104,18 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.data?.let {
+            _deeplink.value = it
+        }
+
+        lifecycleScope.launch {
+            delay(500)
+            _deeplink.value = Uri.EMPTY
         }
     }
 }

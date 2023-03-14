@@ -19,6 +19,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.annotation.OrbitExperimental
 import org.orbitmvi.orbit.syntax.simple.blockingIntent
@@ -26,12 +28,14 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import xyz.duckee.android.core.domain.art.SerializeArtUseCase
 import xyz.duckee.android.core.domain.art.UploadArtUseCase
 import xyz.duckee.android.core.domain.generate.GetGenerationStatusUseCase
 import xyz.duckee.android.core.model.GenerateTaskStatus
 import xyz.duckee.android.core.ui.RecipeStore
 import xyz.duckee.android.feature.recipe.contract.RecipeResultMetadataState
 import xyz.duckee.android.feature.recipe.contract.RecipeSideEffect
+import xyz.duckee.android.feature.recipe.model.MintResultDeeplink
 import javax.inject.Inject
 
 @OptIn(OrbitExperimental::class)
@@ -40,7 +44,9 @@ internal class RecipeMetadataConfigViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getGenerationStatusUseCase: GetGenerationStatusUseCase,
     private val uploadArtUseCase: UploadArtUseCase,
+    private val serializeArtUseCase: SerializeArtUseCase,
     private val recipeStore: RecipeStore,
+    private val json: Json,
 ) : ViewModel(), ContainerHost<RecipeResultMetadataState, RecipeSideEffect> {
 
     override val container = container<RecipeResultMetadataState, RecipeSideEffect>(RecipeResultMetadataState())
@@ -84,12 +90,39 @@ internal class RecipeMetadataConfigViewModel @Inject constructor(
         reduce { state.copy(description = value) }
     }
 
-    fun onConfirmButtonClick() = intent {
+    fun serializeArt(): String {
+        val recipe = recipeStore.recipeState.value
+        val state = container.stateFlow.value
+
+        return serializeArtUseCase(
+            forSale = !state.isNotForSale,
+            imageUrl = generateResult?.resultImageUrl.orEmpty(),
+            description = state.description,
+            priceInFlow = state.price.takeIf { !state.isNotForSale && !state.isOpenSource }?.toDouble() ?: 0.0,
+            royaltyFee = state.royalty.takeIf { !state.isNotForSale && !state.isOpenSource }?.toInt() ?: 0,
+            isImported = recipe["isImported"] as Boolean,
+            modelName = recipe["modelName"] as String,
+            prompt = recipe["prompt"] as String,
+            sizeWidth = recipe["sizeWidth"] as Int,
+            sizeHeight = recipe["sizeHeight"] as Int,
+            negativePrompt = recipe["negativePrompt"] as? String,
+            guidanceScale = recipe["guidanceScale"] as? Int,
+            runs = recipe["runs"] as? Int,
+            sampler = recipe["sampler"] as? String,
+            seed = recipe["seed"] as? Int,
+            parentTokenId = recipe["parentTokenId"] as? Int,
+        )
+    }
+
+    fun onConfirmButtonClick(data: String) = intent {
         reduce { state.copy(isLoading = true) }
+
+        val deeplinkResult: MintResultDeeplink = json.decodeFromString(data)
 
         val recipe = recipeStore.recipeState.value
 
         uploadArtUseCase(
+            tokenMint = deeplinkResult.tokenMint,
             forSale = !state.isNotForSale,
             imageUrl = generateResult?.resultImageUrl.orEmpty(),
             description = state.description,
@@ -107,7 +140,7 @@ internal class RecipeMetadataConfigViewModel @Inject constructor(
             seed = recipe["seed"] as? Int,
             parentTokenId = recipe["parentTokenId"] as? Int,
         ).suspendOnSuccess {
-            postSideEffect(RecipeSideEffect.GoSuccessScreen)
+            postSideEffect(RecipeSideEffect.GoSuccessScreen(deeplinkResult.blockExplorerUrl))
         }
     }
 

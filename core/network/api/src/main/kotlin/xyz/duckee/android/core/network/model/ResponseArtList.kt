@@ -43,7 +43,7 @@ data class ResponseArtList(
             val address: String,
             val email: String,
             val id: Int,
-            val profileImage: String,
+            val profileImage: String?,
         )
     }
 }

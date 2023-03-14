@@ -28,7 +28,7 @@ import xyz.duckee.android.feature.recipe.RecipeRoute
 fun NavGraphBuilder.recipeScreen(
     goRecipeResultScreen: (String) -> Unit,
     goRecipeMetadataScreen: (String) -> Unit,
-    goSuccessScreen: () -> Unit,
+    goSuccessScreen: (String) -> Unit,
     goMyTab: () -> Unit,
     goExploreTab: () -> Unit,
     goGenerateScreen: (Boolean) -> Unit,

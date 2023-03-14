@@ -15,26 +15,19 @@
  */
 package xyz.duckee.android.feature.collection.component
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import xyz.duckee.android.core.designsystem.DuckeeButton
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 
 @Composable
@@ -68,30 +61,30 @@ internal fun CollectionWallet(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
-        DuckeeButton(
-            label = "Bring Your Own Wallet",
-            labelStyle = DuckeeTheme.typography.paragraph5.copy(
-                fontWeight = FontWeight.Medium,
-            ),
-            iconSpacing = 6.dp,
-            labelColor = Color.White,
-            backgroundColor = Color(0xFF244728),
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 7.dp),
-            icon = {
-                Icon(
-                    painter = painterResource(id = xyz.duckee.android.core.designsystem.R.drawable.icon_flow_logo),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(20.dp),
-                )
-            },
-            onClick = onLinkButtonClick,
-            modifier = Modifier.border(
-                width = 1.dp,
-                color = Color(0xFF33633E),
-                shape = RoundedCornerShape(8.dp),
-            ),
-        )
+//        DuckeeButton(
+//            label = "Bring Your Own Wallet",
+//            labelStyle = DuckeeTheme.typography.paragraph5.copy(
+//                fontWeight = FontWeight.Medium,
+//            ),
+//            iconSpacing = 6.dp,
+//            labelColor = Color.White,
+//            backgroundColor = Color(0xFF244728),
+//            shape = RoundedCornerShape(8.dp),
+//            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 7.dp),
+//            icon = {
+//                Icon(
+//                    painter = painterResource(id = xyz.duckee.android.core.designsystem.R.drawable.icon_flow_logo),
+//                    contentDescription = null,
+//                    tint = Color.Unspecified,
+//                    modifier = Modifier.size(20.dp),
+//                )
+//            },
+//            onClick = onLinkButtonClick,
+//            modifier = Modifier.border(
+//                width = 1.dp,
+//                color = Color(0xFF33633E),
+//                shape = RoundedCornerShape(8.dp),
+//            ),
+//        )
     }
 }

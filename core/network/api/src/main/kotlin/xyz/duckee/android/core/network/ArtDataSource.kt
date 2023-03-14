@@ -28,6 +28,7 @@ interface ArtDataSource {
     ): ApiResponse<ResponseArtList>
 
     suspend fun uploadArt(
+        tokenMint: String,
         forSale: Boolean,
         imageUrl: String,
         description: String? = null,
@@ -45,6 +46,25 @@ interface ArtDataSource {
         seed: Int?,
         parentTokenId: Int?,
     ): ApiResponse<Unit>
+
+    fun serializeArt(
+        forSale: Boolean,
+        imageUrl: String,
+        description: String? = null,
+        priceInFlow: Double,
+        royaltyFee: Int,
+        isImported: Boolean,
+        modelName: String,
+        prompt: String,
+        sizeWidth: Int,
+        sizeHeight: Int,
+        negativePrompt: String?,
+        guidanceScale: Int?,
+        runs: Int?,
+        sampler: String?,
+        seed: Int?,
+        parentTokenId: Int?,
+    ): String
 
     suspend fun getArtDetail(tokenId: String): ApiResponse<ResponseArtDetail>
 

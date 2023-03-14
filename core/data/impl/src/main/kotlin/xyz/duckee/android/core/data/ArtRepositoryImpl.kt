@@ -31,6 +31,7 @@ internal class ArtRepositoryImpl @Inject constructor(
         artDataSource.getArtFeed(startAfter, limit, tags).mapSuccess { toModel() }
 
     override suspend fun uploadArt(
+        tokenMint: String,
         forSale: Boolean,
         imageUrl: String,
         description: String?,
@@ -49,6 +50,7 @@ internal class ArtRepositoryImpl @Inject constructor(
         parentTokenId: Int?,
     ): ApiResponse<Unit> =
         artDataSource.uploadArt(
+            tokenMint,
             forSale,
             imageUrl,
             description,
@@ -66,6 +68,42 @@ internal class ArtRepositoryImpl @Inject constructor(
             seed,
             parentTokenId,
         )
+
+    override fun serializeArt(
+        forSale: Boolean,
+        imageUrl: String,
+        description: String?,
+        priceInFlow: Double,
+        royaltyFee: Int,
+        isImported: Boolean,
+        modelName: String,
+        prompt: String,
+        sizeWidth: Int,
+        sizeHeight: Int,
+        negativePrompt: String?,
+        guidanceScale: Int?,
+        runs: Int?,
+        sampler: String?,
+        seed: Int?,
+        parentTokenId: Int?,
+    ): String = artDataSource.serializeArt(
+        forSale,
+        imageUrl,
+        description,
+        priceInFlow,
+        royaltyFee,
+        isImported,
+        modelName,
+        prompt,
+        sizeWidth,
+        sizeHeight,
+        negativePrompt,
+        guidanceScale,
+        runs,
+        sampler,
+        seed,
+        parentTokenId,
+    )
 
     override suspend fun getArtDetails(tokenId: String): ApiResponse<ArtDetails> =
         artDataSource.getArtDetail(tokenId).mapSuccess { artDetails.toModel() }

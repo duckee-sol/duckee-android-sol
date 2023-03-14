@@ -16,7 +16,10 @@
 package xyz.duckee.android.core.domain.user
 
 import com.skydoves.sandwich.ApiResponse
+import com.skydoves.sandwich.suspendMapSuccess
 import dagger.Reusable
+import kotlinx.coroutines.flow.first
+import xyz.duckee.android.core.data.PreferencesRepository
 import xyz.duckee.android.core.data.UserRepository
 import xyz.duckee.android.core.model.User
 import javax.inject.Inject
@@ -24,8 +27,13 @@ import javax.inject.Inject
 @Reusable
 class GetUserProfileUseCase @Inject constructor(
     private val userRepository: UserRepository,
+    private val preferencesRepository: PreferencesRepository,
 ) {
 
     suspend operator fun invoke(id: String): ApiResponse<User> =
-        userRepository.getUser(id)
+        userRepository.getUser(id).suspendMapSuccess {
+            copy(
+                address = preferencesRepository.preference.first().address,
+            )
+        }
 }

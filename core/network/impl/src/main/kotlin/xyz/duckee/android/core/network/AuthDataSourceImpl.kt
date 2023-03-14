@@ -17,42 +17,44 @@ package xyz.duckee.android.core.network
 
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.suspendOnSuccess
-import timber.log.Timber
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import xyz.duckee.android.core.network.api.AuthAPI
-import xyz.duckee.android.core.network.firebase.FirebaseAuthManager
 import xyz.duckee.android.core.network.interceptor.AuthorizationHeaderInterceptor
+import xyz.duckee.android.core.network.model.DeeplinkAuthResult
 import xyz.duckee.android.core.network.model.ResponseSignIn
 import xyz.duckee.android.core.network.model.request.RequestSignIn
 import javax.inject.Inject
 
 internal class AuthDataSourceImpl @Inject constructor(
     apiProvider: APIProvider,
-    private val firebaseAuthManager: FirebaseAuthManager,
+    private val json: Json,
     private val authorizationHeaderInterceptor: AuthorizationHeaderInterceptor,
 ) : AuthDataSource {
 
     private val api = apiProvider[AuthAPI::class.java]
 
-    override suspend fun signInWithFirebase(): ApiResponse<ResponseSignIn> {
-        val idToken = firebaseAuthManager.getCurrentUserIdToken().orEmpty()
-        Timber.e("\uD83D\uDD25 [FirebaseUserIdToken] $idToken")
+    override suspend fun signIn(rawData: String): ApiResponse<ResponseSignIn> {
+        val result: DeeplinkAuthResult = json.decodeFromString(rawData)
 
-        if (idToken.isBlank()) {
+        if (result.idToken.isBlank()) {
             return ApiResponse.error(NullPointerException("firebase idToken == null"))
         }
 
         return api.signIn(
             payload = RequestSignIn(
-                channel = "firebase",
-                token = idToken,
+                channel = "web3auth",
+                token = result.idToken,
+                address = result.address,
             ),
         ).suspendOnSuccess {
             authorizationHeaderInterceptor.setAccessToken(token = data.credentials.accessToken)
         }
     }
 
-    override suspend fun signUpWithFirebase(): ApiResponse<ResponseSignIn> {
-        val idToken = firebaseAuthManager.getCurrentUserIdToken().orEmpty()
+    override suspend fun signUp(rawData: String): ApiResponse<ResponseSignIn> {
+        val result: DeeplinkAuthResult = json.decodeFromString(rawData)
+        val idToken = result.idToken
 
         if (idToken.isBlank()) {
             return ApiResponse.error(NullPointerException("firebase idToken == null"))
@@ -60,8 +62,9 @@ internal class AuthDataSourceImpl @Inject constructor(
 
         return api.signUp(
             payload = RequestSignIn(
-                channel = "firebase",
+                channel = "web3auth",
                 token = idToken,
+                address = result.address,
             ),
         ).suspendOnSuccess {
             authorizationHeaderInterceptor.setAccessToken(token = data.credentials.accessToken)

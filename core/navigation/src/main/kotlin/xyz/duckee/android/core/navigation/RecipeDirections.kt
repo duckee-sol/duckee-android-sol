@@ -55,8 +55,8 @@ fun NavController.navigateToRecipeResultMetadataScreen(id: String) {
     )
 }
 
-fun NavController.navigateToRecipeSuccessScreen() {
-    this.navigate(RecipeDirections.success.destination)
+fun NavController.navigateToRecipeSuccessScreen(scanUrl: String) {
+    this.navigate(RecipeDirections.success.destination.replace("{scanUrl}", scanUrl))
 }
 
 object RecipeDirections {
@@ -98,8 +98,12 @@ object RecipeDirections {
     }
 
     val success = object : NavigationCommand {
-        override val arguments: List<NamedNavArgument> = emptyList()
-        override val destination: String = "$recipeNavigationRoute/list-success"
+        override val arguments: List<NamedNavArgument> = listOf(
+            navArgument("scanUrl") {
+                type = NavType.StringType
+            },
+        )
+        override val destination: String = "$recipeNavigationRoute/list-success?scanUrl={scanUrl}"
     }
 
     val welcome = object : NavigationCommand {

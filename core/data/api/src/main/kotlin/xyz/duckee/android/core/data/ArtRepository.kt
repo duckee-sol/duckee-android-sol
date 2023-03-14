@@ -24,6 +24,7 @@ interface ArtRepository {
     suspend fun getArtFeed(startAfter: Int?, limit: Int?, tags: String?): ApiResponse<ArtList>
 
     suspend fun uploadArt(
+        tokenMint: String,
         forSale: Boolean,
         imageUrl: String,
         description: String?,
@@ -41,6 +42,25 @@ interface ArtRepository {
         seed: Int?,
         parentTokenId: Int?,
     ): ApiResponse<Unit>
+
+    fun serializeArt(
+        forSale: Boolean,
+        imageUrl: String,
+        description: String?,
+        priceInFlow: Double,
+        royaltyFee: Int,
+        isImported: Boolean,
+        modelName: String,
+        prompt: String,
+        sizeWidth: Int,
+        sizeHeight: Int,
+        negativePrompt: String?,
+        guidanceScale: Int?,
+        runs: Int?,
+        sampler: String?,
+        seed: Int?,
+        parentTokenId: Int?,
+    ): String
 
     suspend fun getArtDetails(tokenId: String): ApiResponse<ArtDetails>
 

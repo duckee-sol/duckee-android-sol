@@ -15,6 +15,9 @@
  */
 package xyz.duckee.android.feature.collection
 
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -71,6 +75,7 @@ import xyz.duckee.android.core.designsystem.DuckeeScrollableTabRow
 import xyz.duckee.android.core.designsystem.R
 import xyz.duckee.android.core.designsystem.foundation.clickableSingle
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
+import xyz.duckee.android.core.ui.DeeplinkHandlable
 import xyz.duckee.android.core.ui.observeAsState
 import xyz.duckee.android.feature.collection.component.CollectionCreditContainer
 import xyz.duckee.android.feature.collection.component.CollectionProfile
@@ -91,6 +96,9 @@ internal fun CollectionRoute(
     likedViewModel: CollectionLikedViewModel = hiltViewModel(),
     goDetailScreen: (Int) -> Unit,
 ) {
+    val context = LocalContext.current
+    val deeplinkHandler = context as DeeplinkHandlable
+    val deeplink by deeplinkHandler.deeplink.collectAsStateWithLifecycle()
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
     val listedUiState by listedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val boughtUiState by boughtViewModel.container.stateFlow.collectAsStateWithLifecycle()
@@ -99,9 +107,16 @@ internal fun CollectionRoute(
     val lifecycle by LocalLifecycleOwner.current.lifecycle.observeAsState()
     LaunchedEffect(lifecycle) {
         if (lifecycle == Lifecycle.Event.ON_RESUME) {
+            viewModel.onResume()
             listedViewModel.onResume()
             boughtViewModel.onResume()
             likedViewModel.onResume()
+        }
+    }
+
+    LaunchedEffect(deeplink) {
+        if (deeplink != Uri.EMPTY) {
+            viewModel.onSettingClick()
         }
     }
 
@@ -117,7 +132,15 @@ internal fun CollectionRoute(
         boughtUiState = boughtUiState,
         likedUiState = likedUiState,
         onArtClick = viewModel::onArtClick,
-        onSettingClick = viewModel::onSettingClick,
+        onSettingClick = {
+            val googleLoginUrl = Uri.parse("https://with-solana.duckee.xyz/auth/logout")
+            val logoutIntent = CustomTabsIntent.Builder().setToolbarColor(android.graphics.Color.BLACK)
+                .setNavigationBarDividerColor(android.graphics.Color.BLACK)
+                .setShowTitle(false)
+                .setShareState(SHARE_STATE_OFF)
+                .setNavigationBarColor(android.graphics.Color.BLACK).build()
+            logoutIntent.launchUrl(context, googleLoginUrl)
+        },
     )
 }
 
@@ -171,13 +194,7 @@ internal fun CollectionScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 CollectionWallet(
                     profileName = uiState.user?.nickname.orEmpty(),
-                    address = uiState.user?.address.orEmpty().run {
-                        if (length > 10) {
-                            substring(0, 5) + "..." + substring(length - 5, length)
-                        } else {
-                            ""
-                        }
-                    },
+                    address = uiState.user?.address.orEmpty(),
                     onLinkButtonClick = {},
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -200,7 +217,7 @@ internal fun CollectionScreen(
                         modifier = Modifier.weight(1f),
                     )
                     CollectionCreditContainer(
-                        title = "Your Revenue",
+                        title = "Your USDC Balance",
                         icon = {
                             Icon(
                                 painter = painterResource(id = R.drawable.icon_usdc),

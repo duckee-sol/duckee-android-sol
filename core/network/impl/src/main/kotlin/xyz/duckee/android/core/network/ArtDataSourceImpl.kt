@@ -16,6 +16,8 @@
 package xyz.duckee.android.core.network
 
 import com.skydoves.sandwich.ApiResponse
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import xyz.duckee.android.core.network.api.ArtAPI
 import xyz.duckee.android.core.network.model.ResponseArtDetail
 import xyz.duckee.android.core.network.model.ResponseArtList
@@ -26,6 +28,7 @@ import javax.inject.Inject
 
 internal class ArtDataSourceImpl @Inject constructor(
     apiProvider: APIProvider,
+    private val json: Json,
 ) : ArtDataSource {
 
     private val api = apiProvider[ArtAPI::class.java]
@@ -34,6 +37,7 @@ internal class ArtDataSourceImpl @Inject constructor(
         api.getArtFeed(startAfter, limit, tags)
 
     override suspend fun uploadArt(
+        tokenMint: String,
         forSale: Boolean,
         imageUrl: String,
         description: String?,
@@ -53,6 +57,7 @@ internal class ArtDataSourceImpl @Inject constructor(
     ): ApiResponse<Unit> =
         api.uploadArt(
             RequestUploadArt(
+                tokenMint = tokenMint,
                 forSale = forSale,
                 description = description,
                 imageUrl = imageUrl,
@@ -79,6 +84,53 @@ internal class ArtDataSourceImpl @Inject constructor(
                 royaltyFee = royaltyFee.toDouble() / 100,
             ),
         )
+
+    override fun serializeArt(
+        forSale: Boolean,
+        imageUrl: String,
+        description: String?,
+        priceInFlow: Double,
+        royaltyFee: Int,
+        isImported: Boolean,
+        modelName: String,
+        prompt: String,
+        sizeWidth: Int,
+        sizeHeight: Int,
+        negativePrompt: String?,
+        guidanceScale: Int?,
+        runs: Int?,
+        sampler: String?,
+        seed: Int?,
+        parentTokenId: Int?,
+    ): String {
+        val payload = RequestUploadArt(
+            forSale = forSale,
+            description = description,
+            imageUrl = imageUrl,
+            liked = true,
+            parentTokenId = parentTokenId,
+            priceInFlow = priceInFlow,
+            recipe = RequestGenerateImage(
+                guidanceScale = guidanceScale,
+                model = RequestGenerateImage.Model(
+                    importedModel = if (isImported) modelName else null,
+                    servedModelName = if (isImported) null else modelName,
+                    type = if (isImported) "imported" else "served",
+                ),
+                negativePrompt = negativePrompt,
+                prompt = prompt,
+                runs = runs,
+                sampler = sampler,
+                seed = seed,
+                size = RequestGenerateImage.Size(
+                    width = sizeWidth,
+                    height = sizeHeight,
+                ),
+            ),
+            royaltyFee = royaltyFee.toDouble() / 100,
+        )
+        return json.encodeToString(payload)
+    }
 
     override suspend fun getArtDetail(tokenId: String): ApiResponse<ResponseArtDetail> =
         api.getArtDetails(tokenId)

@@ -23,7 +23,7 @@ data class ResponseUser(
     val nickname: String,
     val email: String,
     val id: Int,
-    val profileImage: String,
+    val profileImage: String?,
     val address: String,
     val following: Boolean?,
     val followerCount: Int?,

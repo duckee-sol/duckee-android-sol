@@ -21,7 +21,7 @@ import xyz.duckee.android.core.model.User
 
 interface AuthRepository {
 
-    suspend fun signInWithFirebase(): ApiResponse<Pair<Credentials, User>>
+    suspend fun signIn(rawData: String): ApiResponse<Pair<Credentials, User>>
 
-    suspend fun signUpWithFirebase(): ApiResponse<Pair<Credentials, User>>
+    suspend fun signUp(rawData: String): ApiResponse<Pair<Credentials, User>>
 }

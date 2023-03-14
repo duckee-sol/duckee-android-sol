@@ -15,6 +15,9 @@
  */
 package xyz.duckee.android.feature.recipe
 
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,11 +33,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,6 +48,7 @@ import xyz.duckee.android.core.designsystem.DuckeeAppBar
 import xyz.duckee.android.core.designsystem.DuckeeButton
 import xyz.duckee.android.core.designsystem.DuckeeCharacterLoadingOverlay
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
+import xyz.duckee.android.core.ui.DeeplinkHandlable
 import xyz.duckee.android.feature.recipe.component.RecipeMetadataDescriptionItem
 import xyz.duckee.android.feature.recipe.component.RecipeMetadataPriceItem
 import xyz.duckee.android.feature.recipe.component.RecipeMetadataRoyaltyItem
@@ -53,13 +59,22 @@ import xyz.duckee.android.feature.recipe.contract.RecipeSideEffect
 @Composable
 internal fun RecipeMetadataConfigRoute(
     viewModel: RecipeMetadataConfigViewModel = hiltViewModel(),
-    goSuccessScreen: () -> Unit,
+    goSuccessScreen: (String) -> Unit,
 ) {
+    val context = LocalContext.current
+    val deepLinkHandler = context as DeeplinkHandlable
+    val deeplink by deepLinkHandler.deeplink.collectAsStateWithLifecycle()
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     viewModel.collectSideEffect {
         if (it is RecipeSideEffect.GoSuccessScreen) {
-            goSuccessScreen()
+            goSuccessScreen(it.solScanUrl)
+        }
+    }
+
+    LaunchedEffect(deeplink) {
+        if (deeplink != Uri.EMPTY) {
+            viewModel.onConfirmButtonClick(deeplink.getQueryParameter("data")!!)
         }
     }
 
@@ -70,7 +85,18 @@ internal fun RecipeMetadataConfigRoute(
         onPriceChanged = viewModel::onPriceChange,
         onRoyaltyChanged = viewModel::onRoyaltyChanged,
         onDescriptionChanged = viewModel::onDescriptionChanged,
-        onConfirmButtonClick = viewModel::onConfirmButtonClick,
+        onConfirmButtonClick = {
+            val mintUrl = Uri.parse("https://with-solana.duckee.xyz/transact/mint")
+                .buildUpon()
+                .appendQueryParameter("data", viewModel.serializeArt())
+                .build()
+            val mintIntent = CustomTabsIntent.Builder().setToolbarColor(android.graphics.Color.BLACK)
+                .setNavigationBarDividerColor(android.graphics.Color.BLACK)
+                .setShowTitle(false)
+                .setShareState(SHARE_STATE_OFF)
+                .setNavigationBarColor(android.graphics.Color.BLACK).build()
+            mintIntent.launchUrl(context, mintUrl)
+        },
     )
 }
 

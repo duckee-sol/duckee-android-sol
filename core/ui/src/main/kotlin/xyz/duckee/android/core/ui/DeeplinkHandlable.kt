@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id("duckee.android.feature")
-    id("duckee.android.library.compose")
-    id("duckee.android.hilt")
-    id("duckee.kotlin.serialization")
-}
+package xyz.duckee.android.core.ui
 
-android {
-    defaultConfig {
-        namespace = "xyz.duckee.android.feature.recipe"
-    }
-}
-dependencies {
-    implementation("androidx.browser:browser:1.5.0")
+import android.net.Uri
+import kotlinx.coroutines.flow.StateFlow
+
+interface DeeplinkHandlable {
+
+    val deeplink: StateFlow<Uri>
 }

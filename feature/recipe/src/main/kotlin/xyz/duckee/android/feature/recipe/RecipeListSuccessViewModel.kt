@@ -15,6 +15,7 @@
  */
 package xyz.duckee.android.feature.recipe
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.ContainerHost
@@ -29,10 +30,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class RecipeListSuccessViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     exploreDataManager: ExploreDataManager,
     collectionDataManager: CollectionDataManager,
     recipeStore: RecipeStore,
 ) : ViewModel(), ContainerHost<Unit, RecipeSideEffect> {
+
+    private val scanUrl = savedStateHandle.get<String>("scanUrl").orEmpty()
 
     override val container = container<Unit, RecipeSideEffect>(Unit)
 
@@ -48,5 +52,9 @@ internal class RecipeListSuccessViewModel @Inject constructor(
 
     fun onExploreButtonClick() = intent {
         postSideEffect(RecipeSideEffect.GoExploreTab)
+    }
+
+    fun onScanButtonClick() = intent {
+        postSideEffect(RecipeSideEffect.OpenScanUrl(scanUrl))
     }
 }

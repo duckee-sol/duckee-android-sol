@@ -91,7 +91,10 @@ internal class APIAuthenticator @Inject constructor(
         if (response is ApiResponse.Success) {
             val accessToken = response.data.credentials.accessToken
 
-            preferencesDataSource.setCredentials(accessToken, refreshToken)
+            preferencesDataSource.setCredentials(
+                accessToken,
+                refreshToken,
+            )
             authorizationHeaderInterceptor.setAccessToken(accessToken)
 
             return accessToken

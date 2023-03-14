@@ -23,4 +23,5 @@ import kotlinx.serialization.Serializable
 data class RequestSignIn(
     val channel: String,
     val token: String,
+    val address: String,
 )

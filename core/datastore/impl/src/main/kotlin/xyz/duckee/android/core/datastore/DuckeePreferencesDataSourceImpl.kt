@@ -35,6 +35,7 @@ internal class DuckeePreferencesDataSourceImpl @Inject constructor(
                 Preferences(
                     accessToken = it.accessToken,
                     refreshToken = it.refreshToken,
+                    address = it.address,
                 )
             }
 
@@ -54,12 +55,27 @@ internal class DuckeePreferencesDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun setAddress(address: String) {
+        try {
+            duckeePreferences.updateData {
+                it.copy {
+                    clearAddress()
+
+                    this.address = address
+                }
+            }
+        } catch (e: IOException) {
+            Timber.e(e)
+        }
+    }
+
     override suspend fun clearCredentials() {
         try {
             duckeePreferences.updateData {
                 it.copy {
                     clearAccessToken()
                     clearRefreshToken()
+                    clearAddress()
                 }
             }
         } catch (e: IOException) {

@@ -18,4 +18,5 @@ package xyz.duckee.android.core.model
 data class Preferences(
     val accessToken: String,
     val refreshToken: String,
+    val address: String,
 )

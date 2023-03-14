@@ -43,7 +43,7 @@ data class ResponseArtDetail(
             val email: String,
             val id: Int,
             val nickname: String,
-            val profileImage: String,
+            val profileImage: String?,
             val following: Boolean?,
         )
 

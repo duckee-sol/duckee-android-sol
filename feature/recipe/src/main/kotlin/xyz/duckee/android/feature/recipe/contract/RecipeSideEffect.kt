@@ -30,8 +30,10 @@ internal sealed interface RecipeSideEffect {
         val resultId: String,
     ) : RecipeSideEffect
 
-    @Stable
-    object GoSuccessScreen : RecipeSideEffect
+    @Immutable
+    data class GoSuccessScreen(
+        val solScanUrl: String,
+    ) : RecipeSideEffect
 
     @Stable
     object GoExploreTab : RecipeSideEffect
@@ -44,6 +46,11 @@ internal sealed interface RecipeSideEffect {
         val importMode: Boolean,
     ) : RecipeSideEffect
 
-    @Immutable
+    @Stable
     object OpenPhotoPicker : RecipeSideEffect
+
+    @Immutable
+    data class OpenScanUrl(
+        val scanUrl: String,
+    ) : RecipeSideEffect
 }

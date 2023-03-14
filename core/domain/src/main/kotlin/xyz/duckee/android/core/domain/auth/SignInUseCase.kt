@@ -25,13 +25,13 @@ import xyz.duckee.android.core.model.User
 import javax.inject.Inject
 
 @Reusable
-class SignInWithGoogleUseCase @Inject constructor(
+class SignInUseCase @Inject constructor(
     private val authRepository: AuthRepository,
     private val preferencesRepository: PreferencesRepository,
 ) {
 
-    suspend operator fun invoke(): ApiResponse<Pair<Credentials, User>> =
-        authRepository.signInWithFirebase().suspendOnSuccess {
+    suspend operator fun invoke(rawData: String): ApiResponse<Pair<Credentials, User>> =
+        authRepository.signIn(rawData).suspendOnSuccess {
             preferencesRepository.setCredentials(data.first.accessToken, data.first.refreshToken)
         }
 }

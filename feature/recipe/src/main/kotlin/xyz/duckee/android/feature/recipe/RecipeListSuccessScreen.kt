@@ -15,27 +15,37 @@
  */
 package xyz.duckee.android.feature.recipe
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 import xyz.duckee.android.core.designsystem.DuckeeButton
+import xyz.duckee.android.core.designsystem.R
+import xyz.duckee.android.core.designsystem.foundation.clickableSingle
 import xyz.duckee.android.core.designsystem.theme.DuckeeTheme
 import xyz.duckee.android.core.designsystem.theme.PPObjectSans
 import xyz.duckee.android.feature.recipe.contract.RecipeSideEffect
@@ -46,11 +56,28 @@ internal fun RecipeListSuccessRoute(
     goMyTab: () -> Unit,
     goExploreTab: () -> Unit,
 ) {
+    val context = LocalContext.current
     viewModel.collectSideEffect {
-        if (it is RecipeSideEffect.GoMyTab) {
-            goMyTab()
-        } else if (it is RecipeSideEffect.GoExploreTab) {
-            goExploreTab()
+        when (it) {
+            is RecipeSideEffect.GoMyTab -> {
+                goMyTab()
+            }
+
+            is RecipeSideEffect.GoExploreTab -> {
+                goExploreTab()
+            }
+
+            is RecipeSideEffect.OpenScanUrl -> {
+                val scanUrl = Uri.parse(it.scanUrl)
+                val scanIntent = CustomTabsIntent.Builder().setToolbarColor(android.graphics.Color.BLACK)
+                    .setNavigationBarDividerColor(android.graphics.Color.BLACK)
+                    .setShowTitle(false)
+                    .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                    .setNavigationBarColor(android.graphics.Color.BLACK).build()
+                scanIntent.launchUrl(context, scanUrl)
+            }
+
+            else -> {}
         }
     }
 
@@ -59,6 +86,7 @@ internal fun RecipeListSuccessRoute(
     RecipeListSuccessScreen(
         onCheckButtonClick = viewModel::onCheckButtonClick,
         onExploreButtonClick = viewModel::onExploreButtonClick,
+        onSolScanClick = viewModel::onScanButtonClick,
     )
 }
 
@@ -66,6 +94,7 @@ internal fun RecipeListSuccessRoute(
 internal fun RecipeListSuccessScreen(
     onCheckButtonClick: () -> Unit,
     onExploreButtonClick: () -> Unit,
+    onSolScanClick: () -> Unit,
 ) {
     Scaffold {
         Column(
@@ -111,6 +140,22 @@ internal fun RecipeListSuccessScreen(
                     .border(width = 1.dp, color = Color(0xFF49565E), shape = RoundedCornerShape(24.dp)),
             )
             Spacer(modifier = Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickableSingle { onSolScanClick() }
+                    .padding(6.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_sol_scan),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(text = "View on Solscan", style = DuckeeTheme.typography.paragraph5, color = Color.White)
+            }
+            Spacer(modifier = Modifier.height(54.dp))
         }
     }
 }
